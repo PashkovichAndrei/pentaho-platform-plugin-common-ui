@@ -387,7 +387,13 @@ define(["dojo/_base/declare", "dijit/_WidgetBase", "dijit/_TemplatedMixin", "dij
     var idx = 0;
     array.forEach(values, function(value) {
       if (value != null) {
-        value = this._unescapeAmpIfExist(value);
+        if (Array.isArray(value)) {
+          str.forEach(function(val) {
+            val.replace(/&amp;/g, '&');
+          });
+        } else if (typeof value === 'string' || value instanceof String) {
+          value.replace(/&amp;/g, '&');
+        }
         var opt =  new Option(value, value);
         opt.title = value;
         this.containerNode.options[idx++] = opt;
@@ -410,22 +416,17 @@ define(["dojo/_base/declare", "dijit/_WidgetBase", "dijit/_TemplatedMixin", "dij
   _updatePicklistAvailableValues: function(values) {
     construct.empty(this.picklistAvailableValues.domNode);
     array.forEach(values, function (result, idx) {
-      result = this._unescapeAmpIfExist(result);
+      if (Array.isArray(result)) {
+        str.forEach(function(val) {
+          val.replace(/&amp;/g, '&');
+        });
+      } else if (typeof result === 'string' || result instanceof String) {
+        result.replace(/&amp;/g, '&');
+      }
       this.containerNode.options[idx] = new Option(result, result);
       this.containerNode.options[idx].title = result;
     }, this.picklistAvailableValues);
     this.picklistLoaded = true;
-  },
-
-  _unescapeAmpIfExist: function(str) {
-    if (Array.isArray(str)) {
-      str.forEach(function(val) {
-        val.replace(/&amp;/g, '&');
-      });
-    } else if (typeof str === 'string' || str instanceof String) {
-      str.replace(/&amp;/g, '&');
-    }
-    return str;
   },
 
   _picklistAddSelected: function() {
